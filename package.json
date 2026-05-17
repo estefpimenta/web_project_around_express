@@ -13,10 +13,14 @@
   "license": "ISC",
   "author": "",
   "type": "commonjs",
-  "main": "index.js",
+  "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-     "lint": "npx eslint ."
+    "lint": "npx eslint .",
+    "start": "node app.js"
+  },
+  "dependencies": {
+    "express": "^4.22.2"
   },
   "devDependencies": {
     "eslint": "^8.56.0",
