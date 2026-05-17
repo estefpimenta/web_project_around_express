@@ -9,7 +9,7 @@ router.get('/', (req, res) => {
 
 // GET /users/:id - usuário específico
 router.get('/:id', (req, res) => {
-  const user = users.find(u => u.id === req.params.id);
+  const user = users.find(u => u._id === req.params.id);
   if (!user) {
     return res.status(404).json({ error: 'Usuário não encontrado' });
   }
