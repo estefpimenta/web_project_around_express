@@ -1,5 +1,6 @@
 ﻿const express = require('express');
 const mongoose = require('mongoose');
+
 const app = express();
 
 const usersRouter = require('./routes/users');
@@ -10,35 +11,54 @@ const { PORT = 3000 } = process.env;
 // Middleware para parser JSON
 app.use(express.json());
 
-// Autorização temporária: adiciona um usuário fixo na request
+// Usuário temporário para testes
 app.use((req, res, next) => {
   req.user = {
-    _id: '5d8b8592978f8bd833ca8133'
+    _id: '5d8b8592978f8bd833ca8133',
   };
   next();
 });
 
+// Rota raiz
 app.get('/', (req, res) => {
   res.send('Servidor Express rodando na porta 3000');
 });
 
-
-// Conectar as rotas
+// Rotas
 app.use('/users', usersRouter);
 app.use('/cards', cardsRouter);
 
 // Tratamento de rota não encontrada (404)
 app.use((req, res) => {
-  res.status(404).json({ message: 'A solicitação não foi encontrada' });
+  res.status(404).json({
+    message: 'A solicitação não foi encontrada',
+  });
 });
 
-// Tratamento de erros do servidor (500)
+// Middleware global de tratamento de erros
 app.use((err, req, res, next) => {
   console.error(err);
-  res.status(err.status || 500).json({
-    message: err.status === 404
-      ? 'A solicitação não foi encontrada'
-      : 'Ocorreu um erro no servidor'
+
+  if (err.name === 'ValidationError') {
+    return res.status(400).json({
+      message: 'Dados inválidos',
+    });
+  }
+
+  if (err.name === 'CastError') {
+    return res.status(400).json({
+      message: 'ID inválido',
+    });
+  }
+
+  if (err.name === 'DocumentNotFoundError') {
+    return res.status(404).json({
+      message: 'Recurso não encontrado',
+    });
+  }
+
+  return res.status(500).json({
+    message: 'Ocorreu um erro no servidor',
   });
 });
 
@@ -47,6 +67,7 @@ const mongoUrl = 'mongodb://localhost:27017/aroundb';
 async function startServer() {
   try {
     await mongoose.connect(mongoUrl);
+
     console.log('Conectado ao MongoDB em', mongoUrl);
 
     app.listen(PORT, () => {
@@ -59,6 +80,3 @@ async function startServer() {
 }
 
 startServer();
-
-
-

@@ -16,29 +16,40 @@ module.exports.createCard = async (req, res, next) => {
   const owner = req.user && req.user._id;
 
   if (!name || !link) {
-    return res.status(400).json({ error: 'Os campos name e link são obrigatórios' });
+    return res.status(400).json({
+      error: 'Os campos name e link são obrigatórios',
+    });
   }
 
   if (!owner) {
-    return res.status(401).json({ error: 'Usuário não autenticado' });
+    return res.status(401).json({
+      error: 'Usuário não autenticado',
+    });
   }
 
   if (!mongoose.Types.ObjectId.isValid(owner)) {
-    return res.status(400).json({ error: 'ID de usuário inválido' });
+    return res.status(400).json({
+      error: 'ID de usuário inválido',
+    });
   }
 
   try {
     const ownerUser = await User.findById(owner);
+
     if (!ownerUser) {
-      return res.status(404).json({ error: 'Usuário (owner) não encontrado' });
+      return res.status(404).json({
+        error: 'Usuário (owner) não encontrado',
+      });
     }
 
-    const card = await Card.create({ name, link, owner });
+    const card = await Card.create({
+      name,
+      link,
+      owner,
+    });
+
     res.status(201).json(card);
   } catch (err) {
-    if (err.name === 'ValidationError') {
-      return res.status(400).json({ error: err.message });
-    }
     next(err);
   }
 };
@@ -46,15 +57,10 @@ module.exports.createCard = async (req, res, next) => {
 module.exports.deleteCard = async (req, res, next) => {
   const { cardId } = req.params;
 
-  if (!mongoose.Types.ObjectId.isValid(cardId)) {
-    return res.status(404).json({ error: 'Cartão não encontrado' });
-  }
-
   try {
-    const deletedCard = await Card.findByIdAndDelete(cardId);
-    if (!deletedCard) {
-      return res.status(404).json({ error: 'Cartão não encontrado' });
-    }
+    const deletedCard = await Card.findByIdAndDelete(cardId)
+      .orFail();
+
     res.json(deletedCard);
   } catch (err) {
     next(err);
