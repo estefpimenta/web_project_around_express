@@ -21,7 +21,8 @@
     "dev": "nodemon app.js"
   },
   "dependencies": {
-    "express": "^4.22.2"
+    "express": "^4.22.2",
+    "mongodb": "^7.2.0"
   },
   "devDependencies": {
     "eslint": "^8.56.0",

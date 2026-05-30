@@ -1,4 +1,5 @@
 ﻿const express = require('express');
+const { MongoClient } = require('mongodb');
 const app = express();
 
 const usersRouter = require('./routes/users');
@@ -30,9 +31,25 @@ app.use((err, req, res, next) => {
   });
 });
 
-app.listen(PORT, () => {
-  console.log(`Servidor rodando em http://localhost:${PORT}`);
-});
+const mongoUrl = 'mongodb://localhost:27017/aroundb';
+const client = new MongoClient(mongoUrl);
+
+async function startServer() {
+  try {
+    await client.connect();
+    app.locals.db = client.db();
+    console.log('Conectado ao MongoDB em', mongoUrl);
+
+    app.listen(PORT, () => {
+      console.log(`Servidor rodando em http://localhost:${PORT}`);
+    });
+  } catch (err) {
+    console.error('Erro ao conectar no MongoDB:', err);
+    process.exit(1);
+  }
+}
+
+startServer();
 
 
 
