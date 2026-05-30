@@ -18,12 +18,19 @@ router.get('/', (req, res) => {
 
 // POST /cards - criar novo cartão
 router.post('/', (req, res) => {
-  const { name, link, owner } = req.body;
+  const { name, link } = req.body;
+  const ownerId = req.user && req.user._id;
 
   // Validação básica
-  if (!name || !link || !owner) {
+  if (!name || !link) {
     return res.status(400).json({
-      error: 'Os campos name, link e owner são obrigatórios'
+      error: 'Os campos name e link são obrigatórios'
+    });
+  }
+
+  if (!ownerId) {
+    return res.status(401).json({
+      error: 'Usuário não autenticado'
     });
   }
 
@@ -37,7 +44,7 @@ router.post('/', (req, res) => {
 
   // Validar que o usuário (owner) existe
   const users = readUsers();
-  const ownerUser = users.find(u => u._id === owner);
+  const ownerUser = users.find(u => u._id === ownerId);
   if (!ownerUser) {
     return res.status(404).json({
       error: 'Usuário (owner) não encontrado'

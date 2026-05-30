@@ -10,6 +10,14 @@ const { PORT = 3000 } = process.env;
 // Middleware para parser JSON
 app.use(express.json());
 
+// Autorização temporária: adiciona um usuário fixo na request
+app.use((req, res, next) => {
+  req.user = {
+    _id: '5d8b8592978f8bd833ca8133'
+  };
+  next();
+});
+
 app.get('/', (req, res) => {
   res.send('Servidor Express rodando na porta 3000');
 });
