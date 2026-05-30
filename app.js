@@ -38,10 +38,7 @@ const mongoUrl = 'mongodb://localhost:27017/aroundb';
 
 async function startServer() {
   try {
-    await mongoose.connect(mongoUrl, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    });
+    await mongoose.connect(mongoUrl);
     console.log('Conectado ao MongoDB em', mongoUrl);
 
     app.listen(PORT, () => {
