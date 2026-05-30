@@ -13,23 +13,11 @@ module.exports.getCards = async (req, res, next) => {
 
 module.exports.createCard = async (req, res, next) => {
   const { name, link } = req.body;
-  const owner = req.user && req.user._id;
+  const owner = req.user._id;
 
   if (!name || !link) {
     return res.status(400).json({
       error: 'Os campos name e link são obrigatórios',
-    });
-  }
-
-  if (!owner) {
-    return res.status(401).json({
-      error: 'Usuário não autenticado',
-    });
-  }
-
-  if (!mongoose.Types.ObjectId.isValid(owner)) {
-    return res.status(400).json({
-      error: 'ID de usuário inválido',
     });
   }
 
@@ -38,7 +26,7 @@ module.exports.createCard = async (req, res, next) => {
 
     if (!ownerUser) {
       return res.status(404).json({
-        error: 'Usuário (owner) não encontrado',
+        error: 'Usuário não encontrado',
       });
     }
 
@@ -62,6 +50,46 @@ module.exports.deleteCard = async (req, res, next) => {
       .orFail();
 
     res.json(deletedCard);
+  } catch (err) {
+    next(err);
+  }
+};
+
+module.exports.likeCard = async (req, res, next) => {
+  try {
+    const card = await Card.findByIdAndUpdate(
+      req.params.cardId,
+      {
+        $addToSet: {
+          likes: req.user._id,
+        },
+      },
+      {
+        new: true,
+      },
+    ).orFail();
+
+    res.json(card);
+  } catch (err) {
+    next(err);
+  }
+};
+
+module.exports.dislikeCard = async (req, res, next) => {
+  try {
+    const card = await Card.findByIdAndUpdate(
+      req.params.cardId,
+      {
+        $pull: {
+          likes: req.user._id,
+        },
+      },
+      {
+        new: true,
+      },
+    ).orFail();
+
+    res.json(card);
   } catch (err) {
     next(err);
   }

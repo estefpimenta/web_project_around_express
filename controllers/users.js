@@ -42,3 +42,41 @@ module.exports.createUser = async (req, res, next) => {
     next(err);
   }
 };
+
+module.exports.updateProfile = async (req, res, next) => {
+  const { name, about } = req.body;
+
+  try {
+    const user = await User.findByIdAndUpdate(
+      req.user._id,
+      { name, about },
+      {
+        new: true,
+        runValidators: true,
+      },
+    ).orFail();
+
+    res.json(user);
+  } catch (err) {
+    next(err);
+  }
+};
+
+module.exports.updateAvatar = async (req, res, next) => {
+  const { avatar } = req.body;
+
+  try {
+    const user = await User.findByIdAndUpdate(
+      req.user._id,
+      { avatar },
+      {
+        new: true,
+        runValidators: true,
+      },
+    ).orFail();
+
+    res.json(user);
+  } catch (err) {
+    next(err);
+  }
+};
