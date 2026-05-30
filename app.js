@@ -7,6 +7,9 @@ const cardsRouter = require('./routes/cards');
 
 const { PORT = 3000 } = process.env;
 
+// Middleware para parser JSON
+app.use(express.json());
+
 app.get('/', (req, res) => {
   res.send('Servidor Express rodando na porta 3000');
 });
