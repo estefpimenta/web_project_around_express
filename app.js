@@ -1,5 +1,5 @@
 ﻿const express = require('express');
-const { MongoClient } = require('mongodb');
+const mongoose = require('mongoose');
 const app = express();
 
 const usersRouter = require('./routes/users');
@@ -32,12 +32,13 @@ app.use((err, req, res, next) => {
 });
 
 const mongoUrl = 'mongodb://localhost:27017/aroundb';
-const client = new MongoClient(mongoUrl);
 
 async function startServer() {
   try {
-    await client.connect();
-    app.locals.db = client.db();
+    await mongoose.connect(mongoUrl, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    });
     console.log('Conectado ao MongoDB em', mongoUrl);
 
     app.listen(PORT, () => {
