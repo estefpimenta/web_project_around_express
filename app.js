@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 
 const app = express();
 
+const authRouter = require('./routes/auth');
 const usersRouter = require('./routes/users');
 const cardsRouter = require('./routes/cards');
 
@@ -11,20 +12,29 @@ const { PORT = 3000 } = process.env;
 // Middleware para parser JSON
 app.use(express.json());
 
-// Usuário temporário para testes
+// Rotas públicas de autenticação
+app.use('/', authRouter);
+
+// Middleware de autenticação global
 app.use((req, res, next) => {
-  req.user = {
-    _id: '5d8b8592978f8bd833ca8133',
-  };
-  next();
+  const authorization = req.headers.authorization;
+
+  if (authorization === 'Bearer authorized-user') {
+    req.user = {
+      _id: '5d8b8592978f8bd833ca8133',
+    };
+    return next();
+  }
+
+  return res.redirect('/signin');
 });
 
-// Rota raiz
+// Rota raiz protegida
 app.get('/', (req, res) => {
   res.send('Servidor Express rodando na porta 3000');
 });
 
-// Rotas
+// Rotas protegidas
 app.use('/users', usersRouter);
 app.use('/cards', cardsRouter);
 
