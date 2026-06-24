@@ -12,12 +12,6 @@ const { PORT = 3000 } = process.env;
 // Middleware para parser JSON
 app.use(express.json());
 
-<<<<<<< HEAD
-// Rotas públicas de autenticação
-app.use('/', authRouter);
-
-// Middleware de autenticação global
-=======
 // Domínios autorizados a acessar a API
 const allowedCors = [
   'https://ttensprint18estef.chickenkiller.com',
@@ -47,8 +41,10 @@ app.use((req, res, next) => {
   return next();
 });
 
-// Usuário temporário para testes
->>>>>>> 2ca5831 (Add CORS middleware)
+// Rotas públicas de autenticação
+app.use('/', authRouter);
+
+// Middleware de autenticação global
 app.use((req, res, next) => {
   const authorization = req.headers.authorization;
 
