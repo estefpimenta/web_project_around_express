@@ -12,10 +12,43 @@ const { PORT = 3000 } = process.env;
 // Middleware para parser JSON
 app.use(express.json());
 
+<<<<<<< HEAD
 // Rotas públicas de autenticação
 app.use('/', authRouter);
 
 // Middleware de autenticação global
+=======
+// Domínios autorizados a acessar a API
+const allowedCors = [
+  'https://ttensprint18estef.chickenkiller.com',
+  'http://ttensprint18estef.chickenkiller.com',
+  'http://localhost:3000',
+  'http://localhost:5173',
+];
+
+// Middleware CORS
+app.use((req, res, next) => {
+  const { origin } = req.headers;
+
+  if (allowedCors.includes(origin)) {
+    res.header('Access-Control-Allow-Origin', origin);
+  }
+
+  if (req.method === 'OPTIONS') {
+    res.header('Access-Control-Allow-Methods', 'GET,HEAD,PUT,PATCH,POST,DELETE');
+    res.header(
+      'Access-Control-Allow-Headers',
+      'Origin, X-Requested-With, Content-Type, Accept, Authorization',
+    );
+
+    return res.sendStatus(200);
+  }
+
+  return next();
+});
+
+// Usuário temporário para testes
+>>>>>>> 2ca5831 (Add CORS middleware)
 app.use((req, res, next) => {
   const authorization = req.headers.authorization;
 
